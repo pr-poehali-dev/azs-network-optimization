@@ -3,19 +3,60 @@ import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 
 const Index = () => {
-  const prices = [
+  const fuelTypes = [
     {
-      volume: "1 литр",
-      price: "50 ₽",
+      name: "АИ-92",
+      price1L: "50 ₽",
+      price50L: "2 450 ₽",
       icon: "Droplet",
-      gradient: "from-red-600 to-orange-500",
+      gradient: "from-green-600 to-emerald-500",
+      desc: "Базовый бензин",
     },
     {
-      volume: "50 литров",
-      price: "709 ₽",
+      name: "АИ-95",
+      price1L: "54 ₽",
+      price50L: "2 650 ₽",
       icon: "Fuel",
-      gradient: "from-yellow-500 to-amber-400",
+      gradient: "from-blue-600 to-cyan-500",
+      desc: "Стандарт качества",
       popular: true,
+    },
+    {
+      name: "АИ-98",
+      price1L: "62 ₽",
+      price50L: "3 050 ₽",
+      icon: "Flame",
+      gradient: "from-red-600 to-orange-500",
+      desc: "Премиум класс",
+    },
+    {
+      name: "ДТ",
+      price1L: "56 ₽",
+      price50L: "2 750 ₽",
+      icon: "Truck",
+      gradient: "from-yellow-600 to-amber-500",
+      desc: "Дизельное топливо",
+    },
+  ];
+
+  const stations = [
+    {
+      name: "АЗС №1 Центральная",
+      address: "ул. Ленина, 45",
+      hours: "Круглосуточно",
+      services: ["Мойка", "Кафе", "Магазин"],
+    },
+    {
+      name: "АЗС №2 Южная",
+      address: "Южное шоссе, 12",
+      hours: "06:00 - 23:00",
+      services: ["Мойка", "Шиномонтаж"],
+    },
+    {
+      name: "АЗС №3 Северная",
+      address: "Северный проспект, 78",
+      hours: "Круглосуточно",
+      services: ["Кафе", "Магазин", "Банкомат"],
     },
   ];
 
@@ -89,48 +130,120 @@ const Index = () => {
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gradient">
             Стоимость топлива
           </h2>
-          <p className="text-muted-foreground text-lg">Прозрачные цены без переплат</p>
+          <p className="text-muted-foreground text-lg">Актуальные цены на все виды топлива</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {prices.map((item, index) => (
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          {fuelTypes.map((fuel, index) => (
             <Card
               key={index}
-              className={`relative overflow-hidden p-8 border-2 transition-all duration-500 hover:scale-105 animate-scale-in ${
-                item.popular
+              className={`relative overflow-hidden p-6 border-2 transition-all duration-500 hover:scale-105 animate-scale-in ${
+                fuel.popular
                   ? "border-secondary bg-gradient-to-br from-secondary/10 to-transparent shadow-2xl shadow-secondary/20"
-                  : "border-primary/50 bg-gradient-to-br from-primary/5 to-transparent hover:border-primary hover:shadow-xl hover:shadow-primary/20"
+                  : "border-border bg-gradient-to-br from-card to-transparent hover:border-primary hover:shadow-xl hover:shadow-primary/10"
               }`}
-              style={{ animationDelay: `${index * 0.2}s` }}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              {item.popular && (
-                <div className="absolute top-4 right-4 bg-secondary text-secondary-foreground px-4 py-1 rounded-full text-sm font-bold animate-glow-pulse">
-                  ВЫГОДНО
+              {fuel.popular && (
+                <div className="absolute top-3 right-3 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-xs font-bold">
+                  ХИТ
                 </div>
               )}
 
-              <div className="flex flex-col items-center text-center space-y-6">
-                <div className={`w-24 h-24 bg-gradient-to-br ${item.gradient} rounded-3xl flex items-center justify-center shadow-2xl animate-float`}>
-                  <Icon name={item.icon} className="text-white" size={48} />
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className={`w-16 h-16 bg-gradient-to-br ${fuel.gradient} rounded-2xl flex items-center justify-center shadow-lg animate-float`}>
+                  <Icon name={fuel.icon} className="text-white" size={32} />
                 </div>
 
                 <div>
-                  <h3 className="text-3xl font-bold mb-2 text-foreground">{item.volume}</h3>
-                  <div className="text-5xl md:text-6xl font-black text-gradient glow-gold">
-                    {item.price}
+                  <h3 className="text-2xl font-black mb-1 text-gradient">{fuel.name}</h3>
+                  <p className="text-xs text-muted-foreground">{fuel.desc}</p>
+                </div>
+
+                <div className="w-full space-y-2">
+                  <div className="flex justify-between items-center py-2 border-b border-border/50">
+                    <span className="text-sm text-muted-foreground">1 литр</span>
+                    <span className="text-xl font-bold text-foreground">{fuel.price1L}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm text-muted-foreground">50 литров</span>
+                    <span className="text-2xl font-black text-gradient glow-gold">{fuel.price50L}</span>
                   </div>
                 </div>
 
                 <Button 
-                  className={`w-full py-6 text-lg font-bold bg-gradient-to-r ${item.gradient} hover:shadow-2xl transition-all duration-300`}
+                  className={`w-full py-3 text-sm font-bold bg-gradient-to-r ${fuel.gradient} hover:shadow-2xl transition-all duration-300`}
                 >
                   Заправиться
-                  <Icon name="ArrowRight" className="ml-2" />
+                  <Icon name="ArrowRight" className="ml-2" size={16} />
                 </Button>
               </div>
             </Card>
           ))}
         </div>
+      </section>
+
+      <section className="container mx-auto px-4 py-20">
+        <div className="text-center mb-12 animate-fade-in">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gradient">
+            Наши АЗС
+          </h2>
+          <p className="text-muted-foreground text-lg">Выберите ближайшую станцию</p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto mb-12">
+          {stations.map((station, index) => (
+            <Card
+              key={index}
+              className="p-6 border border-border bg-card hover:border-primary/50 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-primary/10 animate-fade-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Icon name="MapPin" className="text-white" size={24} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg mb-1 text-gradient">{station.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-2">{station.address}</p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Icon name="Clock" size={14} />
+                    <span>{station.hours}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-4">
+                {station.services.map((service, i) => (
+                  <span
+                    key={i}
+                    className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full border border-primary/20"
+                  >
+                    {service}
+                  </span>
+                ))}
+              </div>
+
+              <Button className="w-full bg-gradient-to-r from-primary to-red-700 hover:shadow-xl transition-all duration-300">
+                <Icon name="Navigation" className="mr-2" size={16} />
+                Построить маршрут
+              </Button>
+            </Card>
+          ))}
+        </div>
+
+        <Card className="p-8 border-2 border-border bg-gradient-to-br from-card to-background max-w-7xl mx-auto animate-scale-in">
+          <div className="aspect-video w-full bg-gradient-to-br from-primary/5 to-secondary/5 rounded-xl flex items-center justify-center border-2 border-dashed border-border">
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mx-auto animate-float">
+                <Icon name="Map" className="text-white" size={40} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-gradient mb-2">Интерактивная карта</h3>
+                <p className="text-muted-foreground">Все наши АЗС на карте города</p>
+              </div>
+            </div>
+          </div>
+        </Card>
       </section>
 
       <section className="container mx-auto px-4 py-20 bg-gradient-to-b from-card to-background rounded-3xl">
