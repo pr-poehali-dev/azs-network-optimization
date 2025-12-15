@@ -1,8 +1,51 @@
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import LoginForm from "@/components/LoginForm";
+import AdminPanel from "@/components/AdminPanel";
+import PurchaseModal from "@/components/PurchaseModal";
+import { getCurrentUser, logout, type User } from "@/lib/auth";
+import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [selectedFuel, setSelectedFuel] = useState<{ name: string; price: number } | null>(null);
+
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+  }, []);
+
+  const handleLoginSuccess = () => {
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setUser(null);
+  };
+
+  const handleBalanceUpdate = () => {
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+  };
+
+  const handlePurchaseClick = (fuelName: string, price: string) => {
+    const numPrice = parseFloat(price.replace(/[^\d.]/g, ""));
+    setSelectedFuel({ name: fuelName, price: numPrice });
+    setShowPurchaseModal(true);
+  };
+
+  const whatsappNumber = "+79011506959";
+  const whatsappLink = `https://wa.me/${whatsappNumber}`;
+
+  if (!user) {
+    return <LoginForm onLoginSuccess={handleLoginSuccess} />;
+  }
   const fuelTypes = [
     {
       name: "АИ-92",
@@ -84,11 +127,64 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-card">
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 animate-pulse" />
-        
-        <div className="container mx-auto px-4 py-20 relative z-10">
+    <>
+      <Toaster />
+      
+      {showAdminPanel && (
+        <AdminPanel
+          onClose={() => setShowAdminPanel(false)}
+          onBalanceUpdate={handleBalanceUpdate}
+        />
+      )}
+
+      {showPurchaseModal && selectedFuel && (
+        <PurchaseModal
+          fuelName={selectedFuel.name}
+          price={selectedFuel.price}
+          onClose={() => setShowPurchaseModal(false)}
+          onBalanceUpdate={handleBalanceUpdate}
+        />
+      )}
+
+      <div className="min-h-screen bg-gradient-to-b from-background via-background to-card">
+        <nav className="container mx-auto px-4 py-6 flex items-center justify-between border-b border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
+              <Icon name="Fuel" className="text-white" size={24} />
+            </div>
+            <span className="text-2xl font-black text-gradient">RGB</span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Card className="px-4 py-2 flex items-center gap-3 border-border bg-card/50">
+              <Icon name="Wallet" className="text-primary" size={20} />
+              <div>
+                <p className="text-xs text-muted-foreground">Баланс</p>
+                <p className="font-bold">{user.balance.toFixed(2)} ₽</p>
+              </div>
+            </Card>
+
+            {user.isAdmin && (
+              <Button
+                onClick={() => setShowAdminPanel(true)}
+                className="bg-gradient-to-r from-primary to-red-700 hover:shadow-xl"
+              >
+                <Icon name="Shield" className="mr-2" size={18} />
+                Админ
+              </Button>
+            )}
+
+            <Button variant="outline" onClick={handleLogout}>
+              <Icon name="LogOut" className="mr-2" size={18} />
+              Выход
+            </Button>
+          </div>
+        </nav>
+
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 animate-pulse" />
+          
+          <div className="container mx-auto px-4 py-20 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
             <div className="inline-block">
               <div className="flex items-center justify-center gap-4 mb-6">
@@ -96,11 +192,11 @@ const Index = () => {
                   <Icon name="Fuel" className="text-white" size={32} />
                 </div>
               </div>
-              <h1 className="text-6xl md:text-7xl font-black mb-4">
-                <span className="text-gradient glow-red">ЗАПРАВКА</span>
+              <h1 className="text-7xl md:text-8xl font-black mb-4">
+                <span className="text-gradient glow-red">RGB</span>
               </h1>
-              <h2 className="text-5xl md:text-6xl font-bold text-gradient glow-gold">
-                БЕНЗИНА
+              <h2 className="text-3xl md:text-4xl font-bold text-muted-foreground">
+                Премиум АЗС
               </h2>
             </div>
             
@@ -113,9 +209,14 @@ const Index = () => {
                 <Icon name="MapPin" className="mr-2" />
                 Найти АЗС
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-secondary text-secondary hover:bg-secondary/10 hover:shadow-xl hover:shadow-secondary/30 transition-all duration-300">
-                <Icon name="Phone" className="mr-2" />
-                Связаться
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 py-6 border-2 border-secondary text-secondary hover:bg-secondary/10 hover:shadow-xl hover:shadow-secondary/30 transition-all duration-300"
+                onClick={() => window.open(whatsappLink, "_blank")}
+              >
+                <Icon name="MessageCircle" className="mr-2" />
+                Связаться в WhatsApp
               </Button>
             </div>
           </div>
@@ -173,6 +274,7 @@ const Index = () => {
 
                 <Button 
                   className={`w-full py-3 text-sm font-bold bg-gradient-to-r ${fuel.gradient} hover:shadow-2xl transition-all duration-300`}
+                  onClick={() => handlePurchaseClick(`${fuel.name} - 50 литров`, fuel.price50L)}
                 >
                   Заправиться
                   <Icon name="ArrowRight" className="ml-2" size={16} />
@@ -269,11 +371,20 @@ const Index = () => {
           <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
             <Icon name="Fuel" className="text-white" size={20} />
           </div>
-          <span className="text-xl font-bold text-gradient">ЗАПРАВКА БЕНЗИНА</span>
+          <span className="text-xl font-bold text-gradient">RGB</span>
         </div>
-        <p className="text-muted-foreground">© 2024 Все права защищены</p>
+        <p className="text-muted-foreground mb-4">© 2024 Все права защищены</p>
+        <Button
+          variant="outline"
+          className="border-secondary text-secondary hover:bg-secondary/10"
+          onClick={() => window.open(whatsappLink, "_blank")}
+        >
+          <Icon name="MessageCircle" className="mr-2" size={18} />
+          Связаться в WhatsApp
+        </Button>
       </footer>
     </div>
+    </>
   );
 };
 
